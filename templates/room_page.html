@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .profile-header h1 {
+    color: #5c3d2e;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+  }
+
+  .profile-header p {
+    font-size: 1.1rem;
+    color: #7a5f4c;
+  }
+
+  .profile-card {
+    background: linear-gradient(135deg, #fff, #fdf4ef);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    margin-top: 25px;
+    text-align: left;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .profile-card h2 {
+    font-size: 1.7rem;
+    color: #5c3d2e;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eacaad;
+    padding-bottom: 10px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    font-weight: 600;
+    color: #5c3d2e;
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    padding: 12px;
+    border: 1px solid #d1b7a3;
+    border-radius: 10px;
+    background: #fff;
+    transition: 0.3s;
+    font-size: 0.95rem;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #ce9a78;
+    box-shadow: 0 0 6px rgba(206, 154, 120, 0.5);
+    outline: none;
+  }
+
+  textarea {
+    resize: none;
+    min-height: 90px;
+  }
+
+  .checkbox-section {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #fffdf9;
+    border: 1px solid #f1dec9;
+  }
+
+  .checkbox-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #5c3d2e;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #faf5f1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e4cbb5;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .checkbox-group label:hover {
+    background: #f7e8dc;
+  }
+
+  .btn-submit {
+    display: block;
+    margin: 25px auto 0;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #ce9a78, #b97a56);
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-3px) scale(1.03);
+    background: linear-gradient(135deg, #b97a56, #a85d3b);
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  #addRoomForm {
+    display: none; /* hidden initially */
+  }
+
+  .profile-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .profile-header {
+    margin-bottom: 30px;
+  }
+
+  .profile-header h1 {
+    color: #5c3d2e;
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .profile-header p {
+    font-size: 1.1rem;
+    color: #777;
+  }
+
+  .profile-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+    text-align: left;
+  }
+
+  .profile-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #5c3d2e;
+  }
+
+  .profile-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .profile-details li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1rem;
+  }
+
+  .profile-actions {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-action {
+    display: inline-block;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ce9a78, #eacaad);
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .btn-action:hover {
+    transform: scale(1.05);
+  }
+
+  .sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #5c3d2e;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .form-grid {
+    grid-template-columns: 1fr; /* stack fields */
+  }
+
+  .checkbox-group {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-page {
+    padding: 15px;
+  }
+
+  .profile-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .profile-header p {
+    font-size: 1rem;
+  }
+
+  .profile-card {
+    padding: 20px;
+  }
+
+  .checkbox-group {
+    grid-template-columns: 1fr; /* full-width checkboxes */
+  }
+
+  .btn-action, .btn-submit {
+    width: 100%; /* full width buttons */
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+}
+
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('room.profile') }}">🏠 Dashboard</a>
+  <a href="{{ url_for('room.profile') }}">🛏 Rooms</a>
+  <a href="/pro">🎓 Student Info</a>
+  <a href="#">📩 Requests</a>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="profile-page">
+  <div class="profile-header">
+    <h1>Hello, {{ user.name }} 👋</h1>
+    <p>Welcome back to Roomify! </p>
+  </div>
+
+  <div class="profile-actions">
+    {% if existing_room %}
+      <a href="{{ url_for('room.edit_room', room_id=existing_room._id) }}" class="btn-action">✏️ Edit Room</a>
+    {% else %}
+      <button class="btn-action" onclick="toggleForm()">➕ Add Room</button>
+    {% endif %}
+  </div>
+  
+
+  <!-- Add Room Form -->
+  <div id="addRoomForm" class="profile-card">
+    <h2>Add New Room</h2>
+    <form method="POST" action="{{ url_for('room.add_room') }}">
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Room Name</label>
+          <input type="text" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Room Rent</label>
+          <input type="number" name="rent" required>
+        </div>
+
+        <div class="form-group">
+          <label>Total Rooms</label>
+          <input type="number" name="total_rooms" required>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <textarea name="address" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Available Rooms</label>
+          <input type="number" name="available_rooms" required>
+        </div>
+
+        <div class="form-group">
+          <label>Room Type</label>
+          <select name="room_type" required>
+            <option value="cot basis">cot Basis</option>
+            <option value="flat">flat</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>For</label>
+          <select name="for_gender" required>
+            <option value="boys">Boys</option>
+            <option value="girls">Girls</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checkbox-section">
+        <h3>Features</h3>
+        <div class="checkbox-group">
+          {% set features = ["Bed","Personal Locker","Study Table & Chair","Lights & Charging Points","Fan","Wi-Fi","Hot & Cold Water","Attached/Common Bathroom","Regular Cleaning","Other"] %}
+          {% for f in features %}
+            <label>
+              <input type="checkbox" name="features" value="{{ f }}" onclick="toggleOtherInput(this, 'featureOtherInput')"> 
+              {{ f }}
+            </label>
+          {% endfor %}
+        </div>
+        <input type="text" id="featureOtherInput" name="feature_other" placeholder="Enter other feature"
+               style="display:none; margin-top:10px; padding:10px; width:100%; border-radius:8px; border:1px solid #d1b7a3;">
+      </div>
+      
+      <div class="checkbox-section">
+        <h3>Rules</h3>
+        <div class="checkbox-group">
+          {% set rules = [
+            "Maintain silence and discipline inside hostel premises.",
+            "Entry and exit timings must be strictly followed.",
+            "Visitors are not allowed in rooms without prior permission.",
+            "Alcohol, drugs, and smoking are strictly prohibited.",
+            "Keep rooms clean and maintain hygiene.",
+            "Do not damage hostel property (furniture, walls, lights, etc.).",
+            "Switch off lights, fans, and appliances when not in use.",
+            "Respect roommates and wardens; avoid quarrels.",
+            "No cooking or use of electrical appliances unless permitted.",
+            "Report any issues (maintenance or safety) to the warden immediately.",
+            "Other"
+          ] %}
+          {% for r in rules %}
+            <label>
+              <input type="checkbox" name="rules" value="{{ r }}" onclick="toggleOtherInput(this, 'ruleOtherInput')"> 
+              {{ r }}
+            </label>
+          {% endfor %}
+        </div>
+        <input type="text" id="ruleOtherInput" name="rule_other" placeholder="Enter other rule"
+               style="display:none; margin-top:10px; padding:10px; width:100%; border-radius:8px; border:1px solid #d1b7a3;">
+      </div>
+      
+      <button type="submit" class="btn-submit">✅ Submit Room</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleForm() {
+    const form = document.getElementById("addRoomForm");
+    form.style.display = form.style.display === "none" ? "block" : "none";
+  }
+
+  function toggleOtherInput(checkbox, inputId) {
+  const input = document.getElementById(inputId);
+  if (checkbox.value === "Other") {
+    input.style.display = checkbox.checked ? "block" : "none";
+    if (!checkbox.checked) {
+      input.value = ""; // clear when unchecked
+    }
+  }
+}
+
+</script>
+{% endblock %}

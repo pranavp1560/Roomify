@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Hosted Students - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+.hosted-page {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #fffdf9;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    font-family: 'Poppins', sans-serif;
+}
+
+.hosted-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.hosted-header h2 {
+    font-size: 2rem;
+    color: #5c3d2e;
+}
+
+.student-card {
+    background: #ffffff;
+    padding: 18px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #b97a56;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.student-info {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.no-students {
+    padding: 30px;
+    text-align: center;
+    color: #777;
+    font-size: 1.1rem;
+}
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #5c3d2e;
+  transition: background 0.3s, transform 0.2s;
+}
+
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('room.profile') }}">🏠 Dashboard</a>
+  <a href="{{ url_for('room.profile') }}">🛏 Rooms</a>
+  <a href="{{ url_for('room.hosted_students') }}">👥 Hosted Students</a>
+  <a href="{{ url_for('room.view_requests') }}">📩 Requests</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="hosted-page">
+    <div class="hosted-header">
+        <h2>👥 Hosted Students</h2>
+    </div>
+
+    {% if hosted_students and hosted_students|length > 0 %}
+    {% for s in hosted_students %}
+    <div class="student-card">
+        <div class="student-info">
+            <strong>{{ s.name }}</strong><br>
+            📱 {{ s.mobile }}<br>
+            🏠 {{ s.address }}<br>
+            🎓 {{ s.college }}<br>
+
+            <p>
+                <strong>Aadhaar:</strong>
+                <a href="{{ s.aadhaar_file }}" target="_blank">View</a>
+            </p>
+
+            <p>
+                <strong>College ID:</strong>
+                <a href="{{ s.college_id_file }}" target="_blank">View</a>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="no-students">No students currently staying in this room.</p>
+{% endif %}
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+{% block title %}{{ mess.name }} - Roomify{% endblock %}
+
+{% block content %}
+<div class="mess-details-wrapper">
+
+  <!-- Header Section -->
+  <div class="mess-header">
+    <div class="mess-info">
+      <h1>{{ mess.name }}</h1>
+      <p class="mess-address">📍 {{ mess.address }}</p>
+      <div class="mess-meta">
+        <span class="tag charge">💰 ₹{{ mess.monthly_charge }}/month</span>
+        <span class="tag type">{{ mess.type | capitalize }}</span>
+        <span class="tag food">🍽 {{ mess.food_type | capitalize }}</span>
+        <span class="tag gender">👥 For: {{ mess.for_gender | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  {% if mess.images %}
+  <div class="mess-gallery">
+    {% for img in mess.images %}
+      <div class="gallery-item">
+        <img src="{{ img }}" alt="Mess Image">
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-img">📷 No images uploaded for this mess yet.</p>
+  {% endif %}
+
+  <!-- Mess Overview -->
+  <div class="mess-card">
+    <h2>🏠 Mess Overview</h2>
+    <div class="mess-stats">
+      <div><strong>Type:</strong> {{ mess.type }}</div>
+      <div><strong>Monthly Charge:</strong> ₹{{ mess.monthly_charge }}</div>
+      <div><strong>Food Type:</strong> {{ mess.food_type }}</div>
+      <div><strong>For:</strong> {{ mess.for_gender }}</div>
+    </div>
+  </div>
+
+  <!-- Facilities -->
+  <div class="mess-card">
+    <h2>✨ Facilities</h2>
+    <ul class="styled-list">
+      {% for f in mess.features %}
+      <li>✔️ {{ f }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Rules -->
+  <div class="mess-card">
+    <h2>📋 Rules</h2>
+    <ul class="styled-list">
+      {% for r in mess.rules %}
+      <li>⚠️ {{ r }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+<!-- Reviews Section -->
+<div class="mess-card">
+  <h2 style="display: flex; justify-content: space-between; align-items: center;">
+    ⭐ Reviews & Ratings
+
+    <a href="{{ url_for('student.view_sentiment_student', item_type='mess', item_id=mess._id) }}" 
+   class="btn-contact">📊 View Sentiment Analysis</a>
+
+</h2>
+
+
+  {% if mess.reviews and mess.reviews|length > 0 %}
+  <div class="reviews-list">
+    {% for rev in mess.reviews %}
+    <div class="review-item">
+      <strong>{{ rev.student_name }}</strong>
+      <span class="rating">⭐ {{ rev.rating }}/5</span>
+    
+      {% if rev.sentiment %}
+        <span class="sentiment-badge 
+          {% if rev.sentiment == 'Positive' %}sentiment-positive
+          {% elif rev.sentiment == 'Neutral' %}sentiment-neutral
+          {% else %}sentiment-negative
+          {% endif %}
+        ">
+          {{ rev.sentiment }}
+        </span>
+      {% endif %}
+    
+      <p>{{ rev.comment }}</p>
+      <small>🕓 {{ rev.date }}</small>
+    </div>
+    
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No reviews yet. Be the first to review!</p>
+  {% endif %}
+
+
+  {% if session.get('role') == 'student' %}
+
+      {# Convert hosted list into list of student_ids #}
+      {% set sid = session.get('user_id') | string %}
+      {% set hosted_ids = mess.hosted_students | map(attribute='student_id') | list %}
+
+      {% if sid in hosted_ids %}
+      <!-- Student is hosted → show review form -->
+      <form method="POST" action="{{ url_for('mess.add_review', mess_id=mess._id) }}" class="review-form">
+        <label><strong>Rating:</strong></label>
+        <select name="rating" required>
+          <option value="">Select</option>
+          {% for i in range(1, 6) %}
+          <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+
+        <textarea name="comment" placeholder="Write your review..." required></textarea>
+        <button type="submit" class="btn-contact">Submit Review</button>
+      </form>
+      {% endif %}
+
+  {% endif %}
+</div>
+
+
+
+
+  <!-- Back Button -->
+  <div class="btn-container">
+    <a href="{{ url_for('student_page') }}" class="btn-back">⬅ Back to Listings</a>
+    <!-- <a href="#" class="btn-contact">📞 Contact Owner</a> -->
+    <!-- APPLY FOR MESS (Only for Students) -->
+{% if session.get('role') == 'student' %}
+
+{% set student_id = session.get('user_id') | string %}
+{% set already_hosted = false %}
+{% set already_applied = false %}
+
+{# Check if hosted #}
+{% for h in mess.hosted_students or [] %}
+    {% if h.student_id == student_id %}
+        {% set already_hosted = true %}
+    {% endif %}
+{% endfor %}
+
+{# Check if applied #}
+{% for req in mess.requests or [] %}
+    {% if req.student_id == student_id and req.status == "pending" %}
+        {% set already_applied = true %}
+    {% endif %}
+{% endfor %}
+
+<div class="apply-box">
+    {% if already_hosted %}
+        <button class="btn-contact" disabled>✔ You are enrolled in this Mess</button>
+
+    {% elif already_applied %}
+        <button class="btn-contact" disabled>⏳ Request Pending</button>
+
+    {% else %}
+        <form method="POST" action="{{ url_for('mess.apply_mess', mess_id=mess._id) }}">
+            <button type="submit" class="btn-contact">📝 Apply for This Mess</button>
+        </form>
+    {% endif %}
+</div>
+
+{% endif %}
+
+  </div>
+</div>
+
+<!-- CSS Styling -->
+<style>
+.mess-details-wrapper {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: linear-gradient(180deg, #fffdf9, #f5e6d8);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.mess-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.mess-info h1 {
+  color: #5c3d2e;
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.mess-address {
+  color: #7a5f4c;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.mess-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  background: #eacaad;
+  color: #5c3d2e;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.mess-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 14px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.no-img {
+  text-align: center;
+  font-style: italic;
+  color: #777;
+}
+
+.mess-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.mess-card:hover {
+  transform: translateY(-3px);
+}
+
+.mess-card h2 {
+  color: #5c3d2e;
+  border-bottom: 2px solid #eacaad;
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+}
+
+.mess-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  font-size: 1rem;
+}
+
+.styled-list {
+  list-style: none;
+  padding: 0;
+}
+
+.styled-list li {
+  background: #fff8f3;
+  margin: 6px 0;
+  padding: 10px 14px;
+  border-left: 4px solid #ce9a78;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #4b3528;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-back, .btn-contact {
+  display: inline-block;
+  padding: 12px 26px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #ce9a78, #b97a56);
+  color: #fff;
+}
+
+.btn-contact {
+  background: #fff;
+  border: 2px solid #b97a56;
+  color: #b97a56;
+}
+
+.btn-back:hover {
+  background: linear-gradient(135deg, #b97a56, #a85d3b);
+  transform: translateY(-3px);
+}
+
+.btn-contact:hover {
+  background: #b97a56;
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(15px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mess-details-wrapper {
+    padding: 20px;
+  }
+  .mess-info h1 {
+    font-size: 1.6rem;
+  }
+  .mess-gallery img {
+    height: 160px;
+  }
+}
+
+
+.reviews-list {
+  margin-top: 15px;
+}
+
+.review-item {
+  background: #fff8f3;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border-left: 4px solid #ce9a78;
+}
+
+.review-item .rating {
+  float: right;
+  font-weight: 700;
+  color: #b97a56;
+}
+
+.review-comment {
+  margin: 8px 0;
+  color: #4b3528;
+}
+
+.review-date {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.review-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-form select,
+.review-form textarea {
+  padding: 12px;
+  border: 1px solid #d1b7a3;
+  border-radius: 10px;
+}
+
+.review-form textarea {
+  height: 100px;
+  resize: none;
+}
+
+/* Sentiment Badge */
+.sentiment-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  margin-left: 10px;
+}
+
+.sentiment-positive {
+  background: #28a745;
+}
+
+.sentiment-neutral {
+  background: #ffc107;
+  color: #333;
+}
+
+.sentiment-negative {
+  background: #dc3545;
+}
+
+.sentiment-link {
+    background: #b97a56;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.sentiment-link:hover {
+    background: #8a5a3a;
+    transform: translateY(-2px);
+}
+
+</style>
+{% endblock %}

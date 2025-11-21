@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Edit Mess - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+
+/* PAGE CONTAINER */
+.profile-page {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/* HEADER */
+.profile-header h1 {
+    color: #5c3d2e;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+/* CARD */
+.profile-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    margin-top: 25px;
+}
+
+/* GRID */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 30px;
+}
+
+/* LABEL */
+label {
+    font-weight: 600;
+    color: #5c3d2e;
+    margin-bottom: 6px;
+}
+
+/* INPUTS */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1b7a3;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.95rem;
+}
+
+textarea { min-height: 90px; }
+
+input:focus, select:focus, textarea:focus {
+    border-color: #ce9a78;
+    box-shadow: 0 0 6px rgba(206, 154, 120, 0.4);
+    outline: none;
+}
+
+/* CHECKBOX SECTIONS */
+.checkbox-section {
+    margin-top: 25px;
+    padding: 18px;
+    background: #fffdf9;
+    border-radius: 12px;
+    border: 1px solid #f1dec9;
+}
+
+.checkbox-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: #5c3d2e;
+}
+
+/* CHECKBOX GRID */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #faf5f1;
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid #e4cbb5;
+
+    font-size: 1rem;
+    font-weight: 600;
+    color: #5c3d2e;
+    height: 55px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+/* Other input */
+.other-input {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #d1b7a3;
+    border-radius: 10px;
+}
+
+/* SUBMIT BUTTON */
+.btn-submit {
+    margin: 25px auto 0;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #ce9a78, #b97a56);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: block;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    transform: scale(1.04);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('mess.profile') }}">🍽 Dashboard</a>
+  <a href="{{ url_for('mess.profile') }}">🥘 Mess Profile</a>
+  <a href="/pro">🎓 Student Info</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+    <div class="profile-header">
+        <h1>Edit Mess Details ✏️</h1>
+    </div>
+
+    <div class="profile-card">
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Mess Name</label>
+                    <input type="text" name="name" value="{{ mess.name }}" required>
+                </div>
+
+                <div>
+                    <label>Veg / Non-Veg</label>
+                    <select name="type" required>
+                        <option value="Veg" {% if mess.type=="Veg" %}selected{% endif %}>Veg</option>
+                        <option value="Non-Veg" {% if mess.type=="Non-Veg" %}selected{% endif %}>Non-Veg</option>
+                        <option value="Both" {% if mess.type=="Both" %}selected{% endif %}>Both</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Monthly Charge</label>
+                    <input type="number" name="monthly_charge" value="{{ mess.monthly_charge }}" required>
+                </div>
+
+                <div>
+                    <label>Address</label>
+                    <textarea name="address" required>{{ mess.address }}</textarea>
+                </div>
+
+                <div>
+                    <label>Food Type</label>
+                    <select name="food_type" required>
+                        <option value="Tiffin System" {% if mess.food_type=="Tiffin System" %}selected{% endif %}>Tiffin System</option>
+                        <option value="Dining Hall" {% if mess.food_type=="Dining Hall" %}selected{% endif %}>Dining Hall</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>For</label>
+                    <select name="for_gender" required>
+                        <option value="boys" {% if mess.for_gender=="boys" %}selected{% endif %}>Boys</option>
+                        <option value="girls" {% if mess.for_gender=="girls" %}selected{% endif %}>Girls</option>
+                        <option value="both" {% if mess.for_gender=="both" %}selected{% endif %}>Both</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Facilities -->
+            <div class="checkbox-section">
+                <h3>Facilities</h3>
+
+                <div class="checkbox-group">
+                    {% set features = ["Breakfast","Lunch","Dinner","Wi-Fi","Filtered Water","Seating Area","TV","Other"] %}
+                    {% for f in features %}
+                        <label>
+                            <input type="checkbox" 
+                                   name="features"
+                                   value="{{ f }}"
+                                   {% if f in mess.features %}checked{% endif %}
+                                   onclick="toggleOtherInput(this, 'featureOther')">
+                            {{ f }}
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <input type="text" id="featureOther" name="feature_other" class="other-input"
+                       placeholder="Enter other facility">
+            </div>
+
+            <!-- Rules -->
+            <div class="checkbox-section">
+                <h3>Rules</h3>
+
+                <div class="checkbox-group">
+                    {% set rules = ["Maintain cleanliness","Be punctual for meals","Respect staff","No outside food allowed","Other"] %}
+                    {% for r in rules %}
+                        <label>
+                            <input type="checkbox" 
+                                   name="rules"
+                                   value="{{ r }}"
+                                   {% if r in mess.rules %}checked{% endif %}
+                                   onclick="toggleOtherInput(this, 'ruleOther')">
+                            {{ r }}
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <input type="text" id="ruleOther" name="rule_other" class="other-input"
+                       placeholder="Enter other rule">
+            </div>
+
+            <button type="submit" class="btn-submit">💾 Update Mess</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function toggleOtherInput(checkbox, inputId) {
+    const input = document.getElementById(inputId);
+    if (checkbox.value === "Other") {
+        input.style.display = checkbox.checked ? "block" : "none";
+        if (!checkbox.checked) input.value = "";
+    }
+}
+</script>
+
+{% endblock %}

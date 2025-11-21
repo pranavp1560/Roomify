@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Student Profile - Roomify{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+  <div class="profile-header">
+    <h1>👤 Student Profile</h1>
+  </div>
+
+
+
+  <div class="profile-card">
+    <h2>📄 Personal Details</h2>
+
+    <form method="POST" action="{{ url_for('student.update_profile') }}" enctype="multipart/form-data">
+
+      <div class="form-grid">
+        <div>
+          <label>Full Name</label>
+          <input type="text" name="name" value="{{ user.student_info.name if user.student_info else '' }}" required>
+        </div>
+
+        <div>
+          <label>Mobile Number</label>
+          <input type="text" name="mobile" value="{{ user.student_info.mobile if user.student_info else '' }}" required>
+        </div>
+
+        <div>
+          <label>Email</label>
+          <input type="email" value="{{ user.email }}" readonly style="background:#eee;">
+        </div>
+
+        <div>
+          <label>College Name</label>
+          <input type="text" name="college" value="{{ user.student_info.college if user.student_info else '' }}" required>
+        </div>
+
+        <div class="full-width">
+          <label>Address</label>
+          <textarea name="address" required>{{ user.student_info.address if user.student_info else '' }}</textarea>
+        </div>
+      </div>
+
+      <h2 style="margin-top:20px;">🪪 Document Upload</h2>
+
+      <div class="upload-section">
+
+        <div class="upload-box">
+          <label><strong>Aadhaar Card</strong></label>
+          <input type="file" name="aadhaar" accept="image/*,.pdf">
+
+          
+        </div>
+
+        <div class="upload-box">
+          <label><strong>College ID</strong></label>
+          <input type="file" name="college_id" accept="image/*,.pdf">
+
+          
+        </div>
+
+      </div>
+
+      <button type="submit" class="btn-submit">Save Profile</button>
+    </form>
+  </div>
+</div>
+
+<style>
+/* Same styling as before */
+.profile-wrapper {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fffdf9;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    font-family: "Poppins", sans-serif;
+}
+
+.status-card {
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    background: #ffb347;
+}
+
+.profile-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 30px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #d1b7a3;
+    margin-top: 6px;
+}
+
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.uploaded {
+    margin-top: 8px;
+    color: green;
+    font-weight: 600;
+}
+
+.btn-submit {
+    margin-top: 25px;
+    background: #b97a56;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+}
+</style>
+{% endblock %}

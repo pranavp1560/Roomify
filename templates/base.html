@@ -1,0 +1,121 @@
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <title>{% block title %}Roomify{% endblock %}</title>
+ 
+   <!-- Google Fonts -->
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+ 
+   <!-- Base CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+ 
+   <!-- Extra CSS block -->
+   {% block extra_css %}{% endblock %}
+ </head>
+ <body>
+ 
+   <!-- Navbar -->
+   <nav class="navbar">
+     <div class="logo">
+       <a href="{{ url_for('first') }}">
+         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Roomify Logo">
+       </a>
+     </div>
+     <div class="hamburger" onclick="toggleMenu()">☰</div>
+     <div class="nav-links" id="navLinks">
+      {% if session.get('role') == 'student' %}
+      <a href="{{ url_for('student_page') }}">Home</a>
+    
+    {% elif session.get('role') == 'room_owner' %}
+      <a href="{{ url_for('room.profile') }}">Home</a>
+    
+    {% elif session.get('role') == 'mess_owner' %}
+      <a href="{{ url_for('mess.profile') }}">Home</a>
+    
+    {% else %}
+      <a href="{{ url_for('first') }}">Home</a>
+    {% endif %}
+    
+       <a href="{{ url_for('logout') }}">Logout</a>
+       
+     </div>
+   </nav>
+ 
+     <!-- Sidebar Toggle Button (mobile only) -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">👤</button>
+
+  <!-- Overlay -->
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar closed" id="sidebar">
+    <div class="profile">
+      <img src="{{ url_for('static', filename='img/owner.png') }}"  alt="Profile">
+      <h2>Welcome, {{ session.user.name if session.get('user') else 'Guest' }}</h2>
+    </div>
+    {% block sidebar_filters %}
+ 
+    {% endblock %}
+    <div class="logout">
+      {% if session.get('user') %}
+        <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+      {% endif %}
+    </div>
+  </aside>
+
+   <!-- Fullscreen Page content -->
+   <main class="content">
+     {% block content %}{% endblock %}
+   </main>
+ 
+   <!-- Footer -->
+   <footer class="footer">
+     <div class="footer-container">
+       <div class="footer-col">
+         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Roomify Logo" class="footer-logo">
+         <p>Roomify is your one-stop platform for managing student rooms, mess facilities, and hostel services seamlessly.</p>
+       </div>
+       <div class="footer-col">
+         <h4>Contact Us</h4>
+         <p>Email: support@roomify.com</p>
+         <p>Phone: +91 744747 1560</p>
+         <p>Address: Kolhapur, Maharashtra, India</p>
+       </div>
+       <div class="footer-col">
+         <h4>Follow Us</h4>
+         <div class="social-links">
+           <a href="#"><img src="{{ url_for('static', filename='img/facebook.png') }}" alt="Facebook"></a>
+           <a href="#"><img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram"></a>
+           <a href="#"><img src="{{ url_for('static', filename='img/twitter.png') }}" alt="Twitter"></a>
+         </div>
+       </div>
+     </div>
+     <div class="footer-bottom">
+       <p>&copy; 2025 Roomify. All rights reserved.</p>
+     </div>
+   </footer>
+ 
+   <script>
+     function toggleMenu(){
+       document.getElementById('navLinks').classList.toggle('active');
+     }
+   </script>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('.main-content');
+    sidebar.classList.toggle('open');
+    sidebar.classList.toggle('closed');
+    content.classList.toggle('expanded');
+  }
+</script>
+
+
+
+ </body>
+ </html>
+ 

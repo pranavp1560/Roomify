@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Mess Profile - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffffd9;
+    border-radius: 15px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .profile-header h2 {
+    font-size: 1.8rem;
+    color: #5c3d2e;
+  }
+
+  .profile-info p { color: #7a5f4c; margin: 0.3rem 0; }
+
+  .details-card {
+    background: #f8ece4;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .details-card h3 {
+    color: #5c3d2e;
+    margin-bottom: 1rem;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .gallery img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
+  .upload-form {
+    margin-top: 1rem;
+    background: #fffdf9;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .upload-form input[type="file"] {
+    padding: 10px;
+    border: 1px solid #e1cbb6;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ce9a78, #eacaad);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .btn-primary:hover { transform: scale(1.05); }
+
+  .delete-form { margin-top: 5px; }
+  .owner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8ece4;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.owner-box img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #ce9a78;
+  object-fit: cover;
+}
+
+.owner-box p {
+  font-weight: 600;
+  color: #5c3d2e;
+  margin: 0;
+}
+
+.owner-box .btn-primary {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #5c3d2e;
+  transition: background 0.3s, transform 0.2s;
+}
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('mess.profile') }}">🍽 Dashboard</a>
+  <a href="{{ url_for('mess.profile') }}">🥘 Mess Profile</a>
+  <a href="{{ url_for('mess.view_requests') }}">📩 Requests</a>
+  <a href="{{ url_for('mess.hosted_students') }}">📩Hosted </a>
+  <a href="{{ url_for('mess.mess_sentiment', mess_id=mess._id) }}"> 📊 View Sentiment Analysis </a>
+
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-info">
+      <h2>{{ mess.name }}</h2>
+      <p><strong>Address:</strong> {{ mess.address }}</p>
+      <p><strong>Type:</strong> {{ mess.type }}</p>
+      <p><strong>Monthly Charge:</strong> ₹{{ mess.monthly_charge }}</p>
+      <p><strong>For:</strong> {{ mess.for_gender }}</p>
+    </div>
+
+    <div class="owner-box">
+      <img src="{{ owner.photo }}" alt="Owner" style="width:80px;height:80px;border-radius:50%;border:2px solid #ce9a78;">
+      <p><strong>{{ owner.name }}</strong></p>
+      <a href="{{ url_for('mess.edit_mess', mess_id=mess._id) }}" class="btn-primary">✏️ Edit Mess</a>
+
+    </div>
+    
+  </div>
+  
+  <div class="details-card">
+    <h3>Facilities</h3>
+    <ul>
+      {% for f in mess.features %}
+      <li>{{ f }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="details-card">
+    <h3>Rules</h3>
+    <ul>
+      {% for r in mess.rules %}
+      <li>{{ r }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="details-card">
+    <h3>Gallery</h3>
+
+    <form class="upload-form" method="POST" enctype="multipart/form-data" action="{{ url_for('mess.upload_mess_image', mess_id=mess._id) }}">
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit" class="btn-primary">Upload Image</button>
+    </form>
+
+    <div class="gallery">
+      {% for image in mess.images %}
+      <div>
+        <img src="{{ image }}" alt="Mess Image">
+        <form method="POST" class="delete-form" action="{{ url_for('mess.delete_mess_image', mess_id=mess._id) }}">
+          <input type="hidden" name="image_url" value="{{ image }}">
+          <button type="submit" class="btn-primary" style="background:#d46a6a;">🗑 Delete</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

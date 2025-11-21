@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Add Mess{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2 class="form-title">{{ 'Edit Mess' if edit else 'Add Your Mess' }}</h2>
+
+  <form method="POST" action="">
+    <label>Mess Name:</label>
+    <input type="text" name="name" value="{{ mess_data.name if edit }}" required>
+
+    <label>Address:</label>
+    <input type="text" name="address" value="{{ mess_data.address if edit }}" required>
+
+    <label>Contact Number:</label>
+    <input type="text" name="contact" value="{{ mess_data.contact if edit }}" required>
+
+    <label>Description:</label>
+    <textarea name="description">{{ mess_data.description if edit }}</textarea>
+
+    <label>Monthly Rate (₹):</label>
+    <input type="number" name="monthly_rate" value="{{ mess_data.monthly_rate if edit }}" required>
+
+    <label>Menu Items (comma-separated):</label>
+    <input type="text" name="menu_items" 
+           value="{{ ', '.join(mess_data.menu_items) if edit else '' }}" 
+           placeholder="e.g., Dal, Roti, Rice, Sabzi">
+
+    <label>Rules (comma-separated):</label>
+    <input type="text" name="rules" 
+           value="{{ ', '.join(mess_data.rules) if edit else '' }}" 
+           placeholder="e.g., No outside food, Maintain cleanliness">
+
+    <button type="submit" class="btn-submit">{{ 'Update' if edit else 'Add Mess' }}</button>
+  </form>
+</div>
+
+<style>
+.form-container {
+  max-width: 650px;
+  margin: 2rem auto;
+  background: #fff8f0;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #5c3d2e;
+}
+label {
+  display: block;
+  margin-top: 10px;
+  color: #5c3d2e;
+}
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 5px;
+}
+.btn-submit {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #ce9a78, #eacaad);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-submit:hover { transform: scale(1.05); }
+</style>
+{% endblock %}

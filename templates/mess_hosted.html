@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Hosted Students - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+.hosted-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fffdf9;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.hosted-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4b3528;
+    margin-bottom: 25px;
+}
+
+.student-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    border-left: 6px solid #b97a56;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.student-card strong {
+    font-size: 1.2rem;
+    color: #5c3d2e;
+}
+
+.student-info {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    color: #6e5241;
+}
+
+.student-info i {
+    margin-right: 6px;
+}
+
+.no-hosted {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+    font-size: 1.1rem;
+}
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #5c3d2e;
+  transition: background 0.3s, transform 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('mess.profile') }}">🍽 Dashboard</a>
+  <a href="{{ url_for('mess.profile') }}">🥘 Mess Profile</a>
+  <a href="{{ url_for('mess.view_requests') }}">📩 Requests</a>
+  <a href="{{ url_for('mess.hosted_students') }}">👥 Hosted Students</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="hosted-container">
+    
+    <div class="hosted-title">
+        <i class="fas fa-users"></i> Hosted Students
+    </div>
+
+    {% if hosted and hosted|length > 0 %}
+        {% for s in hosted %}
+        <div class="student-card">
+            <strong>{{ s.student_info.name }}</strong><br>
+            📱 {{ s.student_info.mobile }}<br>
+            🏠 {{ s.student_info.address }}<br>
+            🎓 {{ s.student_info.college }}<br>
+
+            <a href="{{ s.student_info.aadhaar_file }}" target="_blank">Aadhaar</a>
+            <a href="{{ s.student_info.college_id_file }}" target="_blank">College ID</a>
+
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-hosted">No hosted students yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

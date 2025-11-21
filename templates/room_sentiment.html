@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Room Sentiment Analysis{% endblock %}
+
+{% block content %}
+<div class="sentiment-container">
+
+    <!-- Heading -->
+    <h1 class="title">📊 Room Sentiment Analysis — {{ room.name }}</h1>
+    <p class="subtitle">
+        Analysis based on recent student reviews submitted for this room.
+    </p>
+
+    <div class="analysis-section">
+
+        <!-- Chart -->
+        <div class="chart-box">
+            <img 
+                src="{{ url_for('room.sentiment_chart', room_id=room._id) }}"
+                class="sentiment-chart"
+                alt="Room Sentiment Chart"
+            >
+        </div>
+
+        <!-- Cards -->
+        <div class="sentiment-cards">
+
+            <div class="card positive">
+              <div class="icon">😊</div>
+              <div>
+                  <h3>Positive</h3>
+                  <p>{{ positive }} reviews</p>
+              </div>
+            </div>
+            <div class="card negative">
+                <div class="icon">😠</div>
+                <div>
+                    <h3>Negative</h3>
+                    <p>{{ negative }} reviews</p>
+                </div>
+            </div>
+
+            <div class="card neutral">
+                <div class="icon">😐</div>
+                <div>
+                    <h3>Neutral</h3>
+                    <p>{{ neutral }} reviews</p>
+                </div>
+            </div>
+
+
+            <div class="card rating">
+                <div class="icon">⭐</div>
+                <div>
+                    <h3>Avg Rating</h3>
+                    <p>{{ avg_rating }}/5</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+
+.sentiment-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 40px;
+    background: linear-gradient(180deg, #fffaf4, #f8ecdf);
+    border-radius: 22px;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.1);
+    animation: fadeIn 0.6s ease-in-out;
+    font-family: "Poppins", sans-serif;
+}
+
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #5c3d2e;
+    font-weight: 700;
+}
+
+.subtitle {
+    text-align: center;
+    margin-top: 10px;
+    color: #7a5f4c;
+    font-size: 1rem;
+}
+
+.analysis-section {
+    margin-top: 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Chart styling */
+.chart-box {
+    flex: 1;
+    min-width: 320px;
+}
+
+.sentiment-chart {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border: 4px solid #eacaad;
+}
+
+/* Cards */
+.sentiment-cards {
+    flex: 1;
+    min-width: 330px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: #ffffff;
+    padding: 18px 20px;
+    border-radius: 16px;
+    border-left: 7px solid #ce9a78;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateX(8px);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #5c3d2e;
+}
+
+.card p {
+    margin: 3px 0 0;
+    font-size: 0.95rem;
+    color: #7a5f4c;
+}
+
+.icon {
+    font-size: 2rem;
+}
+
+/* Color variants */
+.negative { border-left-color: #e74c3c; }
+.neutral  { border-left-color: #f1c40f; }
+.positive { border-left-color: #2ecc71; }
+.rating   { border-left-color: #8d6e63; }
+
+/* Animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(8px);}
+    to   {opacity: 1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analysis-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    .sentiment-chart {
+        max-width: 90%;
+        margin: auto;
+    }
+    .sentiment-cards {
+        width: 100%;
+    }
+}
+
+</style>
+
+{% endblock %}

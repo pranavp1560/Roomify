@@ -1,0 +1,138 @@
+ {% extends "base.html" %}
+ {% block title %}Student Home{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='student.css') }}">
+{% endblock %}
+
+{% block content %}
+
+  
+
+<button class="sidebar-toggle" onclick="toggleSidebar()">👤</button>
+
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+
+<aside class="sidebar" id="sidebar">
+  <div class="profile">
+    <img src="{{ url_for('static', filename='img/profile.png') }}" alt="Profile">
+    <h2>Welcome, User</h2>
+  </div>
+  {% block sidebar_filters %} 
+  <div class="filters">
+    <h3>Filters</h3>
+    <form id="filterForm" method="GET" action="{{ url_for('student.search') }}">
+      <label><input type="checkbox" name="type" value="room" {% if 'room' in request.args.getlist('type') %}checked{% endif %}> Rooms</label><br>
+      <label><input type="checkbox" name="type" value="mess" {% if 'mess' in request.args.getlist('type') %}checked{% endif %}> Mess</label><br>
+      
+      <label><input type="checkbox" name="price" value="below2000" {% if 'below2000' in request.args.getlist('price') %}checked{% endif %}> Price below ₹2000</label><br>
+      <label><input type="checkbox" name="price" value="above2000" {% if 'above2000' in request.args.getlist('price') %}checked{% endif %}> Price above ₹2000</label><br>
+    </form>
+  </div>
+  {% endblock %}
+  <div class="logout">
+    <a href="/logout" class="btn-logout">Logout</a>
+  </div>
+</aside>
+<script>
+  // Auto-submit the filter form when any checkbox is toggled
+  document.querySelectorAll('.filters input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      document.getElementById('filterForm').submit();
+    });
+  });
+</script>
+
+<main class="main-content" style="padding: 30px;">
+  
+  
+  <section class="hero">
+    <h2>Welcome, {{ user.name }} 👋</h2>
+
+    <form method="GET" action="{{ url_for('student.search') }}" class="search-box">
+      <input 
+        type="text" 
+        name="q" 
+        placeholder="Search for rooms or messes..." 
+        value="{{ request.args.get('q', '') }}"
+      >
+      <button type="submit"><span>&#128269;</span></button>
+    </form>
+    
+  </section>
+
+  <section class="featured">
+    {% if request.args.get('q') %}
+    <p>Showing results for "<strong>{{ request.args.get('q') }}</strong>"</p>
+    {% endif %}
+  <h2>Available Rooms</h2>
+  <div class="grid">
+    {% for room in rooms %}
+    <div class="card">
+      {% if room.images and room.images[0] %}
+      <img src="{{ room.images[0] }}" alt="Room Image">
+      {% else %}
+      <img src="{{ url_for('static', filename='img/room.jpg') }}" alt="Default Room">
+      {% endif %}
+      <div class="card-body">
+        
+        <h4>{{ room.name }}</h4>
+        <p><strong>Rent:</strong> ₹{{ room.rent }}</p>
+        <p><strong>Address:</strong> {{ room.address }}</p>
+        <p><strong>For:</strong> {{ room.for_gender }}</p>
+        <a href="{{ url_for('room_details', room_id=room._id) }}" class="btn">View Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 style="margin-top: 40px;">Available Mess</h2>
+  <div class="grid">
+    {% for m in messes %}
+    <div class="card">
+      {% if m.images and m.images[0] %}
+      <img src="{{ m.images[0] }}" alt="Mess Image">
+      {% else %}
+      <img src="{{ url_for('static', filename='img/mess.jpg') }}" alt="Default Mess">
+      {% endif %}
+      <div class="card-body">
+        <h4>{{ m.name }}</h4>
+        <p><strong>Type:</strong> {{ m.type }}</p>
+        <p><strong>Monthly Charge:</strong> ₹{{ m.monthly_charge }}</p>
+        <p><strong>For:</strong> {{ m.for_gender }}</p>
+        <a href="{{ url_for('mess_details', mess_id=m._id) }}" class="btn">View Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  </section>
+</main>
+
+<style>
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform .2s ease;
+}
+.card:hover {
+  transform: scale(1.03);
+}
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 15px;
+}
+</style>
+{% endblock %}

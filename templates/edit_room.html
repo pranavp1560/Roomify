@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Edit Room - Roomify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+
+  .profile-header h1 {
+    color: #5c3d2e;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .profile-card {
+    background: linear-gradient(135deg, #fff, #fdf4ef);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    text-align: left;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  label { font-weight: 600; color: #5c3d2e; margin-bottom: 6px; }
+  input, select, textarea {
+    padding: 12px;
+    border: 1px solid #d1b7a3;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.95rem;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #ce9a78;
+    box-shadow: 0 0 6px rgba(206, 154, 120, 0.5);
+    outline: none;
+  }
+
+  textarea { resize: none; min-height: 90px; }
+
+  .checkbox-section {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #fffdf9;
+    border: 1px solid #f1dec9;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .btn-submit {
+    display: block;
+    margin: 25px auto 0;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #ce9a78, #b97a56);
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .btn-submit:hover { transform: translateY(-3px) scale(1.03); }
+</style>
+{% endblock %}
+
+{% block sidebar_filters %}
+<nav class="sidebar-menu">
+  <a href="{{ url_for('room.profile') }}">🏠 Dashboard</a>
+  <a href="{{ url_for('room.profile') }}">🛏 Room Profile</a>
+  <a href="/pro">🎓 Student Info</a>
+  <a href="#">📩 Requests</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <div class="profile-header">
+    <h1>Edit Room ✏️</h1>
+  </div>
+
+  <div class="profile-card">
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Room Name</label>
+          <input type="text" name="name" value="{{ room.name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Room Rent</label>
+          <input type="number" name="rent" value="{{ room.rent }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Total Rooms</label>
+          <input type="number" name="total_rooms" value="{{ room.total_rooms }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <textarea name="address" required>{{ room.address }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Available Rooms</label>
+          <input type="number" name="available_rooms" value="{{ room.available_rooms }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Room Type</label>
+          <select name="room_type" required>
+            <option value="cot basis" {% if room.room_type == "cot basis" %}selected{% endif %}>cot Basis</option>
+            <option value="flat" {% if room.room_type == "flat" %}selected{% endif %}>flat</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>For</label>
+          <select name="for_gender" required>
+            <option value="boys" {% if room.for_gender == "boys" %}selected{% endif %}>Boys</option>
+            <option value="girls" {% if room.for_gender == "girls" %}selected{% endif %}>Girls</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checkbox-section">
+        <h3>Features</h3>
+        <div class="checkbox-group">
+          {% set features = ["Bed","Personal Locker","Study Table & Chair","Lights & Charging Points","Fan","Wi-Fi","Hot & Cold Water","Attached/Common Bathroom","Regular Cleaning","Other"] %}
+          {% for f in features %}
+            <label>
+              <input type="checkbox" name="features" value="{{ f }}" {% if f in room.features %}checked{% endif %} onclick="toggleOtherInput(this, 'featureOtherInput')"> {{ f }}
+            </label>
+          {% endfor %}
+        </div>
+        <input type="text" id="featureOtherInput" name="feature_other" placeholder="Enter other feature"
+               value="{{ room.feature_other if room.feature_other }}" 
+               style="margin-top:10px; padding:10px; width:100%; border-radius:8px; border:1px solid #d1b7a3;">
+      </div>
+
+      <div class="checkbox-section">
+        <h3>Rules</h3>
+        <div class="checkbox-group">
+          {% set rules = [
+            "Maintain silence and discipline inside hostel premises.",
+            "Entry and exit timings must be strictly followed.",
+            "Visitors are not allowed in rooms without prior permission.",
+            "Alcohol, drugs, and smoking are strictly prohibited.",
+            "Keep rooms clean and maintain hygiene.",
+            "Do not damage hostel property (furniture, walls, lights, etc.).",
+            "Switch off lights, fans, and appliances when not in use.",
+            "Respect roommates and wardens; avoid quarrels.",
+            "No cooking or use of electrical appliances unless permitted.",
+            "Report any issues (maintenance or safety) to the warden immediately.",
+            "Other"
+          ] %}
+          {% for r in rules %}
+            <label>
+              <input type="checkbox" name="rules" value="{{ r }}" {% if r in room.rules %}checked{% endif %} onclick="toggleOtherInput(this, 'ruleOtherInput')"> {{ r }}
+            </label>
+          {% endfor %}
+        </div>
+        <input type="text" id="ruleOtherInput" name="rule_other" placeholder="Enter other rule"
+               value="{{ room.rule_other if room.rule_other }}" 
+               style="margin-top:10px; padding:10px; width:100%; border-radius:8px; border:1px solid #d1b7a3;">
+      </div>
+
+      <button type="submit" class="btn-submit">💾 Update Room</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleOtherInput(checkbox, inputId) {
+  const input = document.getElementById(inputId);
+  if (checkbox.value === "Other") {
+    input.style.display = checkbox.checked ? "block" : "none";
+  }
+}
+</script>
+{% endblock %}
