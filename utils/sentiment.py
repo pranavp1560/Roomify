@@ -1,6 +1,17 @@
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+# Ensure VADER lexicon is available (important for Render)
+try:
+    nltk.data.find('sentiment/vader_lexicon.zip')
+except LookupError:
+    nltk.download('vader_lexicon')
+
+sia = SentimentIntensityAnalyzer()
+
+def analyze_sentiment(text):
+    return sia.polarity_scores(text)
+
 # Make sure this is downloaded once during setup
 # nltk.download("vader_lexicon")
 
@@ -36,3 +47,4 @@ def analyze_sentiment(review_text, rating=None):
         "text_score": text_score,
         "rating_score": rating_score
     }
+
